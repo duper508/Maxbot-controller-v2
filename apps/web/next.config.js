@@ -1,28 +1,31 @@
 /** @type {import('next').NextConfig} */
 
-// Validate required environment variables at build/startup time
-const requiredEnvVars = [
-  'DISCORD_WEBHOOK_URL',
-  'DISCORD_BOT_TOKEN',
-  'DISCORD_CHANNEL_ID',
-  'GITHUB_PAT',
-  'GITHUB_ID',
-  'GITHUB_SECRET',
-  'NEXTAUTH_SECRET',
-  'NEXTAUTH_URL',
-];
+// Validate required environment variables (skip in Vercel builds since they're set via UI)
+// Only validate if explicitly running locally (not in CI/Vercel environment)
+if (!process.env.VERCEL && process.env.NODE_ENV === 'production') {
+  const requiredEnvVars = [
+    'DISCORD_WEBHOOK_URL',
+    'DISCORD_BOT_TOKEN',
+    'DISCORD_CHANNEL_ID',
+    'GITHUB_PAT',
+    'GITHUB_ID',
+    'GITHUB_SECRET',
+    'NEXTAUTH_SECRET',
+    'NEXTAUTH_URL',
+  ];
 
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+  const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
-if (missingEnvVars.length > 0) {
-  console.error('❌ Missing required environment variables:');
-  missingEnvVars.forEach(envVar => {
-    console.error(`  - ${envVar}`);
-  });
-  throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  if (missingEnvVars.length > 0) {
+    console.error('❌ Missing required environment variables:');
+    missingEnvVars.forEach(envVar => {
+      console.error(`  - ${envVar}`);
+    });
+    throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  }
+
+  console.log('✅ All required environment variables are configured');
 }
-
-console.log('✅ All required environment variables are configured');
 
 const nextConfig = {
   output: 'standalone',
