@@ -11,7 +11,7 @@ export class CommandManager {
   private commands: Map<string, Command> = new Map();
 
   constructor() {
-    this.loadCommands(commandsData.commands);
+    this.loadCommands(commandsData.commands as Command[]);
   }
 
   private loadCommands(commands: Command[]) {
