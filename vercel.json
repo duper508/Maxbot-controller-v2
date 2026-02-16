@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "yarn install --frozen-lockfile && yarn turbo run build --filter=maxbot-controller-web...",
+  "buildCommand": "yarn install --frozen-lockfile && npx turbo run build --filter=maxbot-controller-web...",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs"
 }
