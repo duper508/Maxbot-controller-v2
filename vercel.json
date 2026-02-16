@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "framework": null,
+  "buildCommand": "npx turbo run build --filter=maxbot-controller-web...",
+  "outputDirectory": "apps/web/.next"
+}
