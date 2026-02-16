@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm --prefix packages/config run build && npm --prefix packages/ui run build && npm --prefix packages/commands run build && npm --prefix apps/web run build",
-  "outputDirectory": "apps/web/.next"
+  "buildCommand": "npm --prefix ../../packages/config run build && npm --prefix ../../packages/ui run build && npm --prefix ../../packages/commands run build && npm run build",
+  "outputDirectory": ".next"
 }
