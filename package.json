@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Fallout Pip-Boy themed ClawdBot command controller",
+  "packageManager": "yarn@1.22.19",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -24,8 +25,5 @@
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "workspaces": ["packages/*", "apps/*"]
 }
