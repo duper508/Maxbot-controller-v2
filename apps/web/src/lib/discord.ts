@@ -2,7 +2,7 @@
  * Discord integration utilities
  */
 
-import { DISCORD } from '@repo/config';
+import { DISCORD, API_ENDPOINTS } from '@repo/config';
 
 interface DiscordWebhookPayload {
   content?: string;
@@ -116,7 +116,7 @@ export async function fetchDiscordMessages(
   options?: { limit?: number; after?: string }
 ): Promise<Array<{ id: string; content: string; author: { username: string } }>> {
   try {
-    const url = new URL(`${DISCORD.DISCORD_API_BASE}/channels/${channelId}/messages`);
+    const url = new URL(`${API_ENDPOINTS.DISCORD_API_BASE}/channels/${channelId}/messages`);
     if (options?.limit) url.searchParams.set('limit', String(options.limit));
     if (options?.after) url.searchParams.set('after', options.after);
 
