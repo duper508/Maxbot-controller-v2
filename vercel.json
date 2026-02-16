@@ -1,5 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm --prefix ../../packages/config run build && npm --prefix ../../packages/ui run build && npm --prefix ../../packages/commands run build && npm run build",
-  "outputDirectory": ".next"
+  "buildCommand": "yarn install --frozen-lockfile && yarn turbo run build --filter=maxbot-controller-web...",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs"
 }
