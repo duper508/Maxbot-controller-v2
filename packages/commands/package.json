@@ -1,0 +1,20 @@
+{
+  "name": "@repo/commands",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Command definitions and management for MaxBot Controller",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "data"],
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@repo/config": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

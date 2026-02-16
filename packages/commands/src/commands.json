@@ -1,0 +1,337 @@
+{
+  "commands": [
+    {
+      "id": "sys_status",
+      "name": "System Status",
+      "description": "Display current system status and resource usage",
+      "category": "system",
+      "icon": "⚙️",
+      "parameters": [],
+      "timeout": 5000
+    },
+    {
+      "id": "sys_restart",
+      "name": "Restart System",
+      "description": "Restart the ClawdBot system",
+      "category": "system",
+      "icon": "🔄",
+      "parameters": [
+        {
+          "id": "delay",
+          "name": "Delay (seconds)",
+          "type": "number",
+          "description": "Delay before restart",
+          "required": false,
+          "default": 0
+        }
+      ],
+      "timeout": 10000,
+      "requiresConfirmation": true,
+      "dangerous": true
+    },
+    {
+      "id": "sys_logs",
+      "name": "View Logs",
+      "description": "Retrieve system logs",
+      "category": "system",
+      "icon": "📋",
+      "parameters": [
+        {
+          "id": "lines",
+          "name": "Number of lines",
+          "type": "number",
+          "description": "How many log lines to retrieve",
+          "required": false,
+          "default": 50
+        },
+        {
+          "id": "level",
+          "name": "Log level",
+          "type": "select",
+          "description": "Filter by log level",
+          "required": false,
+          "options": ["ALL", "INFO", "WARN", "ERROR"]
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "net_ping",
+      "name": "Ping Host",
+      "description": "Ping a remote host to check connectivity",
+      "category": "network",
+      "icon": "🌐",
+      "parameters": [
+        {
+          "id": "host",
+          "name": "Host",
+          "type": "string",
+          "description": "Hostname or IP address",
+          "required": true,
+          "placeholder": "example.com"
+        },
+        {
+          "id": "count",
+          "name": "Ping count",
+          "type": "number",
+          "description": "Number of pings",
+          "required": false,
+          "default": 4
+        }
+      ],
+      "timeout": 15000
+    },
+    {
+      "id": "net_trace",
+      "name": "Trace Route",
+      "description": "Trace network route to a host",
+      "category": "network",
+      "icon": "🗺️",
+      "parameters": [
+        {
+          "id": "host",
+          "name": "Target Host",
+          "type": "string",
+          "description": "Hostname or IP address",
+          "required": true,
+          "placeholder": "example.com"
+        }
+      ],
+      "timeout": 30000
+    },
+    {
+      "id": "net_dns",
+      "name": "DNS Lookup",
+      "description": "Perform DNS lookup for a domain",
+      "category": "network",
+      "icon": "🔍",
+      "parameters": [
+        {
+          "id": "domain",
+          "name": "Domain",
+          "type": "string",
+          "description": "Domain name to lookup",
+          "required": true,
+          "placeholder": "example.com"
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "proc_list",
+      "name": "List Processes",
+      "description": "List running processes",
+      "category": "processes",
+      "icon": "⚡",
+      "parameters": [
+        {
+          "id": "filter",
+          "name": "Process filter",
+          "type": "string",
+          "description": "Filter processes by name",
+          "required": false,
+          "placeholder": "node"
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "proc_kill",
+      "name": "Kill Process",
+      "description": "Terminate a running process",
+      "category": "processes",
+      "icon": "🛑",
+      "parameters": [
+        {
+          "id": "pid",
+          "name": "Process ID",
+          "type": "number",
+          "description": "PID of the process to kill",
+          "required": true
+        },
+        {
+          "id": "force",
+          "name": "Force kill",
+          "type": "boolean",
+          "description": "Use SIGKILL instead of SIGTERM",
+          "required": false,
+          "default": false
+        }
+      ],
+      "timeout": 5000,
+      "requiresConfirmation": true,
+      "dangerous": true
+    },
+    {
+      "id": "proc_monitor",
+      "name": "Monitor Process",
+      "description": "Monitor a specific process",
+      "category": "processes",
+      "icon": "👁️",
+      "parameters": [
+        {
+          "id": "pid",
+          "name": "Process ID",
+          "type": "number",
+          "description": "PID to monitor",
+          "required": true
+        },
+        {
+          "id": "duration",
+          "name": "Duration (seconds)",
+          "type": "number",
+          "description": "How long to monitor",
+          "required": false,
+          "default": 60
+        }
+      ],
+      "timeout": 120000
+    },
+    {
+      "id": "disk_usage",
+      "name": "Disk Usage",
+      "description": "Check disk usage and free space",
+      "category": "storage",
+      "icon": "💾",
+      "parameters": [
+        {
+          "id": "path",
+          "name": "Path",
+          "type": "string",
+          "description": "Disk path to check",
+          "required": false,
+          "default": "/"
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "disk_cleanup",
+      "name": "Disk Cleanup",
+      "description": "Clean up temporary files and cache",
+      "category": "storage",
+      "icon": "🧹",
+      "parameters": [
+        {
+          "id": "aggressive",
+          "name": "Aggressive cleanup",
+          "type": "boolean",
+          "description": "Include more aggressive cleanup",
+          "required": false,
+          "default": false
+        }
+      ],
+      "timeout": 30000,
+      "requiresConfirmation": true
+    },
+    {
+      "id": "git_status",
+      "name": "Git Status",
+      "description": "Show git repository status",
+      "category": "development",
+      "icon": "🔀",
+      "parameters": [
+        {
+          "id": "repo_path",
+          "name": "Repository path",
+          "type": "string",
+          "description": "Path to git repository",
+          "required": false,
+          "placeholder": "/path/to/repo"
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "git_pull",
+      "name": "Git Pull",
+      "description": "Pull latest changes from remote",
+      "category": "development",
+      "icon": "⬇️",
+      "parameters": [
+        {
+          "id": "repo_path",
+          "name": "Repository path",
+          "type": "string",
+          "description": "Path to git repository",
+          "required": false,
+          "placeholder": "/path/to/repo"
+        }
+      ],
+      "timeout": 30000
+    },
+    {
+      "id": "docker_ps",
+      "name": "Docker Containers",
+      "description": "List running Docker containers",
+      "category": "containers",
+      "icon": "🐳",
+      "parameters": [
+        {
+          "id": "all",
+          "name": "Show all containers",
+          "type": "boolean",
+          "description": "Include stopped containers",
+          "required": false,
+          "default": false
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "docker_restart",
+      "name": "Restart Container",
+      "description": "Restart a Docker container",
+      "category": "containers",
+      "icon": "🔄",
+      "parameters": [
+        {
+          "id": "container",
+          "name": "Container ID/Name",
+          "type": "string",
+          "description": "Container identifier",
+          "required": true,
+          "placeholder": "my-container"
+        }
+      ],
+      "timeout": 10000,
+      "requiresConfirmation": true
+    },
+    {
+      "id": "env_show",
+      "name": "Show Environment",
+      "description": "Display environment variables",
+      "category": "environment",
+      "icon": "🌍",
+      "parameters": [
+        {
+          "id": "pattern",
+          "name": "Filter pattern",
+          "type": "string",
+          "description": "Variable name pattern",
+          "required": false,
+          "placeholder": "NODE_"
+        }
+      ],
+      "timeout": 5000
+    },
+    {
+      "id": "perf_benchmark",
+      "name": "Run Benchmark",
+      "description": "Run system performance benchmark",
+      "category": "performance",
+      "icon": "⚡",
+      "parameters": [
+        {
+          "id": "test",
+          "name": "Benchmark test",
+          "type": "select",
+          "description": "Type of benchmark",
+          "required": false,
+          "options": ["cpu", "memory", "disk", "network", "all"]
+        }
+      ],
+      "timeout": 60000
+    }
+  ]
+}
