@@ -2,7 +2,7 @@
  * Authentication and authorization middleware for API routes
  */
 
-import { getServerSession, getCsrfToken as getNextAuthCsrfToken } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
