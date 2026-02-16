@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd packages/config && npm run build && cd ../ui && npm run build && cd ../commands && npm run build && cd ../../apps/web && npm run build",
+  "buildCommand": "bash -c 'cd packages/config && npm run build && cd ../ui && npm run build && cd ../commands && npm run build && cd ../../apps/web && npm run build'",
   "outputDirectory": "apps/web/.next"
 }
