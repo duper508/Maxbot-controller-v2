@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "yarn install && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "apps/web/.next"
 }
