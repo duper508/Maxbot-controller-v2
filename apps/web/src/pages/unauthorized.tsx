@@ -298,3 +298,7 @@ export default function UnauthorizedPage() {
     </>
   );
 }
+
+export async function getServerSideProps() {
+  return { props: {} };
+}
