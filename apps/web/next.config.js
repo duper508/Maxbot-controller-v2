@@ -41,9 +41,9 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      react: path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-      'styled-jsx': path.resolve(__dirname, 'node_modules/styled-jsx'),
+      react: path.resolve(__dirname, '../../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
+      'styled-jsx': path.resolve(__dirname, '../../node_modules/styled-jsx'),
     };
     return config;
   },
