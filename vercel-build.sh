@@ -9,5 +9,4 @@ npm exec --prefix ../.. -- tsc -p ../../packages/ui/tsconfig.json
 # Ensure a single React runtime at monorepo root for SSR/prerender.
 npm install --include=dev --prefix ../.. react@18.2.0 react-dom@18.2.0 --no-save
 
-# Temporary unblock: allow deploy to proceed despite known export-tail errors.
-NEXT_IGNORE_INCORRECT_LOCKFILE=1 npm run build --prefix ../../apps/web || true
+NEXT_IGNORE_INCORRECT_LOCKFILE=1 npm run build --prefix ../../apps/web
