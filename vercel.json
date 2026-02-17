@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && npm install && npm run -w packages/config build && npm run -w packages/commands build && npm run -w packages/ui build && (NEXT_IGNORE_INCORRECT_LOCKFILE=1 npm run -w apps/web build || true)",
+  "buildCommand": "npm install --prefix ../.. && npm run build --prefix ../../packages/config && npm run build --prefix ../../packages/commands && npm run build --prefix ../../packages/ui && (NEXT_IGNORE_INCORRECT_LOCKFILE=1 npm run build --prefix ../../apps/web || true)",
   "outputDirectory": ".next",
   "framework": "nextjs"
 }
