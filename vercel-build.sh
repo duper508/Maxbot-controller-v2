@@ -7,7 +7,7 @@ npm exec --prefix ../.. -- tsc -p ../../packages/config/tsconfig.json
 npm exec --prefix ../.. -- tsc -p ../../packages/commands/tsconfig.json
 npm exec --prefix ../.. -- tsc -p ../../packages/ui/tsconfig.json
 # Ensure app-local React runtime is present to avoid root/app React mismatch at prerender.
-npm install --include=dev --prefix ../../apps/web react@18.2.0 react-dom@18.2.0 --no-save
+npm install --include=dev --prefix ../.. -w apps/web react@18.2.0 react-dom@18.2.0 --no-save
 
 # Temporary unblock: allow deploy to proceed despite known export-tail errors.
 NEXT_IGNORE_INCORRECT_LOCKFILE=1 npm run build --prefix ../../apps/web || true
