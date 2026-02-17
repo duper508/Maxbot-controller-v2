@@ -2,7 +2,7 @@
 set -eu
 
 # Runs from apps/web (Vercel Root Directory), so paths are relative to that.
-npm install --prefix ../..
+npm install --include=dev --prefix ../..
 npm exec --prefix ../.. tsc -p ../../packages/config/tsconfig.json
 npm exec --prefix ../.. tsc -p ../../packages/commands/tsconfig.json
 npm exec --prefix ../.. tsc -p ../../packages/ui/tsconfig.json
