@@ -79,17 +79,23 @@ export const authOptions: NextAuthOptions = {
      * Called on successful sign in
      * Verify user is a collaborator before allowing access
      */
-    async signIn({ user }) {
-      if (!user?.name) {
-        console.error('Missing username');
+    async signIn({ user, profile }) {
+      // Use GitHub login (profile.login), not display name.
+      const username =
+        typeof (profile as { login?: unknown } | undefined)?.login === 'string'
+          ? ((profile as { login: string }).login)
+          : user?.name;
+
+      if (!username) {
+        console.error('Missing GitHub username/login');
         return false;
       }
 
       // Check if user is owner or collaborator using server-side PAT
-      const isAuthorized = await checkUserAuthorized(user.name);
+      const isAuthorized = await checkUserAuthorized(username);
 
       if (!isAuthorized) {
-        console.warn(`User ${user.name} is not authorized on the repository`);
+        console.warn(`User ${username} is not authorized on the repository`);
         return '/unauthorized';
       }
 
