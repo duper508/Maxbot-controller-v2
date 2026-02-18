@@ -15,7 +15,7 @@ if (!process.env.GITHUB_PAT) {
 }
 
 const GITHUB_REPO_OWNER = 'duper508';
-const GITHUB_REPO_NAME = 'maxbot-controller';
+const GITHUB_REPO_NAME = 'Maxbot-controller-v2';
 
 /**
  * Check if user is a collaborator on the repository
