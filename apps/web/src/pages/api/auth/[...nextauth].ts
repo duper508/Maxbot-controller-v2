@@ -18,13 +18,36 @@ const GITHUB_REPO_OWNER = 'duper508';
 const GITHUB_REPO_NAME = 'Maxbot-controller-v2';
 
 /**
- * Check if user is a collaborator on the repository
+ * Check if user is a collaborator or owner on the repository
  * Uses dedicated GitHub PAT from environment for authorization
  */
-async function checkUserCollaborator(username: string): Promise<boolean> {
+async function checkUserAuthorized(username: string): Promise<boolean> {
   try {
     // Use the server-side GitHub PAT (not the user's token)
     const response = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `token ${process.env.GITHUB_PAT}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const repo = await response.json();
+    
+    // Check if user is the repo owner
+    if (repo.owner?.login === username) {
+      return true;
+    }
+
+    // Check if user is a collaborator
+    const collaboratorResponse = await fetch(
       `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/collaborators/${username}`,
       {
         method: 'GET',
@@ -36,9 +59,9 @@ async function checkUserCollaborator(username: string): Promise<boolean> {
     );
 
     // 204 = user is a collaborator, 404 = user is not
-    return response.status === 204;
+    return collaboratorResponse.status === 204;
   } catch (error) {
-    console.error('Collaborator check failed:', error);
+    console.error('Authorization check failed:', error);
     return false;
   }
 }
@@ -62,11 +85,11 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      // Check if user is a collaborator using server-side PAT
-      const isCollaborator = await checkUserCollaborator(user.name);
+      // Check if user is owner or collaborator using server-side PAT
+      const isAuthorized = await checkUserAuthorized(user.name);
 
-      if (!isCollaborator) {
-        console.warn(`User ${user.name} is not a collaborator on the repository`);
+      if (!isAuthorized) {
+        console.warn(`User ${user.name} is not authorized on the repository`);
         return '/unauthorized';
       }
 
