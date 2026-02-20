@@ -4,6 +4,8 @@
  * NEVER exposes secrets to browser
  */
 
+import { getCsrfToken } from 'next-auth/react';
+
 interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
@@ -63,11 +65,25 @@ async function apiCall<T = any>(
   body?: any
 ): Promise<ApiResponse<T>> {
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Add CSRF token for state-changing requests
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+      try {
+        const csrfToken = await getCsrfToken();
+        if (csrfToken) {
+          headers['x-csrf-token'] = csrfToken;
+        }
+      } catch (error) {
+        console.warn('Failed to get CSRF token:', error);
+      }
+    }
+
     const options: RequestInit = {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
     };
 
     if (body) {

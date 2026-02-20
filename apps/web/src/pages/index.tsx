@@ -90,7 +90,7 @@ interface SelectedCommand {
   parameters: Record<string, string | number | boolean>;
 }
 
-export default function Home() {
+export default function Home({ discordChannelId }: { discordChannelId: string }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [commands, setCommands] = useState<Command[]>([]);
@@ -218,7 +218,7 @@ export default function Home() {
         try {
           // Call real poll-response API to get bot messages
           const pollResult = await pollResponses(
-            process.env.NEXT_PUBLIC_DISCORD_CHANNEL_ID || '',
+            discordChannelId,
             5,
             requestId
           );
@@ -765,5 +765,9 @@ export default function Home() {
 }
 
 export async function getServerSideProps() {
-  return { props: {} };
+  return {
+    props: {
+      discordChannelId: process.env.DISCORD_CHANNEL_ID || '',
+    },
+  };
 }
