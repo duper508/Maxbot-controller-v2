@@ -321,6 +321,11 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
 
   const handleCommandSelect = useCallback(
     (command: Command) => {
+      if (isLoading) {
+        setOutput('> COMMAND ALREADY RUNNING\n> WAIT FOR CURRENT EXECUTION TO COMPLETE');
+        return;
+      }
+
       const params: Record<string, string | number | boolean> = {};
       command.parameters.forEach((param) => {
         if (param.default !== undefined) {
@@ -330,6 +335,7 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
         }
       });
       setSelectedCmd({ command, parameters: params });
+      setOutput(`> SELECTED: ${command.name}\n> READY`);
 
       // UX: single-click executes simple/safe commands (e.g., System Status).
       if (
@@ -337,10 +343,11 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
         !command.dangerous &&
         !command.requiresConfirmation
       ) {
+        setOutput(`> EXECUTING: ${command.name}\n> PREPARING WEBHOOK REQUEST...`);
         void executeSelectedCommand(command, params);
       }
     },
-    [executeSelectedCommand]
+    [executeSelectedCommand, isLoading]
   );
 
   const handleParameterChange = (paramId: string, value: unknown) => {
