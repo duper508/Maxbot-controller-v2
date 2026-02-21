@@ -19,6 +19,7 @@ interface ExecuteCommandRequest {
 
 interface ExecuteCommandResponse {
   requestId: string;
+  webhookMessageId?: string;
   message: string;
 }
 

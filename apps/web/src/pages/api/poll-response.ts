@@ -79,7 +79,7 @@ async function handler(
     // Poll Discord
     const result = await pollDiscordForResponse(String(channelId), undefined, {
       limit: parsedLimit,
-      after: String(after),
+      after: typeof after === 'string' && after.trim().length > 0 ? after : undefined,
     });
 
     if (result.error) {

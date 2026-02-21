@@ -67,7 +67,7 @@ let botUserIdLookupAttempted = false;
  */
 export async function sendCommandToDiscord(
   payload: DiscordWebhookPayload
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; messageId?: string }> {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
@@ -78,7 +78,10 @@ export async function sendCommandToDiscord(
   }
 
   try {
-    const response = await fetch(webhookUrl, {
+    const webhookWithWait = new URL(webhookUrl);
+    webhookWithWait.searchParams.set('wait', 'true');
+
+    const response = await fetch(webhookWithWait.toString(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +99,16 @@ export async function sendCommandToDiscord(
       };
     }
 
-    return { success: true };
+    try {
+      const data = (await response.json()) as { id?: string };
+      return {
+        success: true,
+        messageId: data.id,
+      };
+    } catch {
+      // Fallback for unexpected non-JSON success responses.
+      return { success: true };
+    }
   } catch (error) {
     console.error('Failed to send webhook:', error);
     return {

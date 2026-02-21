@@ -205,6 +205,7 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
         }
 
         const requestId = (result.data as any)?.requestId;
+        const webhookMessageId = (result.data as any)?.webhookMessageId;
         setExecutionProgress({
           commandName: command.name,
           stage: 'sent',
@@ -252,7 +253,7 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
             const pollResult = await pollResponses(
               discordChannelId,
               5,
-              requestId
+              webhookMessageId
             );
 
             if (pollResult.success && pollResult.data?.messages && pollResult.data.messages.length > 0) {

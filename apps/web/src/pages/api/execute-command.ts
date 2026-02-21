@@ -26,6 +26,7 @@ interface ExecuteCommandRequest {
 interface ExecuteCommandResponse {
   success: boolean;
   requestId?: string;
+  webhookMessageId?: string;
   message?: string;
   error?: string;
 }
@@ -149,6 +150,7 @@ async function handler(
       success: true,
       message: 'Command sent successfully',
       requestId,
+      webhookMessageId: result.messageId,
     });
   } catch (error) {
     console.error('Execute command error:', error);
