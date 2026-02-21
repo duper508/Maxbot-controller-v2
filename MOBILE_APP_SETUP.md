@@ -35,7 +35,7 @@ Android App (Local)
 ### 1. Download APK
 
 Option A: **From GitHub Releases**
-1. Go to [github.com/duper508/maxbot-controller/releases](https://github.com/duper508/maxbot-controller/releases)
+1. Go to [github.com/duper508/Maxbot-controller-v2/releases](https://github.com/duper508/Maxbot-controller-v2/releases)
 2. Download the latest `app-release.apk`
 3. Transfer to your Android device
 

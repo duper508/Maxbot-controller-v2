@@ -103,7 +103,7 @@ Visit **http://localhost:3000**
 ## Troubleshooting
 
 ### "Unauthorized" after login
-- You need to be a collaborator on `duper508/maxbot-controller`
+- You need to be a collaborator on `duper508/Maxbot-controller-v2`
 - Ask @duper508 to add you
 
 ### Secrets showing in console

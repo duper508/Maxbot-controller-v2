@@ -13,7 +13,8 @@ import {
   Switch,
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { THEME, SPACING } from '@repo/config';
+import { THEME } from '@repo/config';
+import { SPACING } from '../lib/spacing';
 
 const styles = StyleSheet.create({
   container: {
@@ -100,8 +101,12 @@ export default function SettingsScreen() {
     try {
       const webhook = await SecureStore.getItemAsync('discord_webhook');
       const token = await SecureStore.getItemAsync('discord_token');
+      const auto = await SecureStore.getItemAsync('auto_refresh');
+      const interval = await SecureStore.getItemAsync('refresh_interval');
       if (webhook) setWebhookUrl(webhook);
       if (token) setBotToken(token);
+      if (auto) setAutoRefresh(auto === 'true');
+      if (interval) setRefreshInterval(interval);
     } catch (error) {
       console.error('Failed to load settings:', error);
     }
@@ -109,12 +114,14 @@ export default function SettingsScreen() {
 
   const saveSettings = async () => {
     try {
-      if (webhookUrl) {
-        await SecureStore.setItemAsync('discord_webhook', webhookUrl);
-      }
-      if (botToken) {
-        await SecureStore.setItemAsync('discord_token', botToken);
-      }
+      const webhook = webhookUrl.trim();
+      const token = botToken.trim();
+      if (webhook) await SecureStore.setItemAsync('discord_webhook', webhook);
+      else await SecureStore.deleteItemAsync('discord_webhook');
+      if (token) await SecureStore.setItemAsync('discord_token', token);
+      else await SecureStore.deleteItemAsync('discord_token');
+      await SecureStore.setItemAsync('auto_refresh', String(autoRefresh));
+      await SecureStore.setItemAsync('refresh_interval', refreshInterval || '5');
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
     } catch (error) {

@@ -10,7 +10,10 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import { THEME, SPACING, type CommandHistoryEntry } from '@repo/config';
+import { THEME, type CommandHistoryEntry } from '@repo/config';
+import { useFocusEffect } from '@react-navigation/native';
+import { clearHistory, getHistory } from '../lib/storage';
+import { SPACING } from '../lib/spacing';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,11 +79,20 @@ const styles = StyleSheet.create({
 export default function HistoryScreen() {
   const [history, setHistory] = useState<CommandHistoryEntry[]>([]);
 
+  const load = async () => {
+    const entries = await getHistory();
+    setHistory(entries);
+  };
+
   useEffect(() => {
-    // TODO: Load from storage
-    // For now, use placeholder
-    setHistory([]);
+    void load();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      void load();
+    }, [])
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -106,8 +118,10 @@ export default function HistoryScreen() {
             <TouchableOpacity
               style={styles.clearButton}
               onPress={() => {
-                // TODO: Implement clear history
-                setHistory([]);
+                void (async () => {
+                  await clearHistory();
+                  setHistory([]);
+                })();
               }}
             >
               <Text style={styles.clearButtonText}>CLEAR ALL</Text>

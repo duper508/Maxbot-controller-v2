@@ -58,7 +58,7 @@ A Fallout Pip-Boy themed command control interface for ClawdBot. Execute command
 
 ```bash
 # Clone the repository
-git clone https://github.com/duper508/maxbot-controller.git
+git clone https://github.com/duper508/Maxbot-controller-v2.git
 cd maxbot-controller
 
 # Install dependencies (monorepo setup)

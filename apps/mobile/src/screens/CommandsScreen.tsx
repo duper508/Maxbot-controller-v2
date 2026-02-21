@@ -11,9 +11,13 @@ import {
   StyleSheet,
   Text,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import { commandManager, type Command } from '@repo/commands';
-import { THEME, SPACING } from '@repo/config';
+import { THEME, STATUS } from '@repo/config';
+import { appendHistory } from '../lib/storage';
+import { SPACING } from '../lib/spacing';
 
 const styles = StyleSheet.create({
   container: {
@@ -96,10 +100,79 @@ export default function CommandsScreen() {
     ? commandManager.searchCommands(searchQuery)
     : commands;
 
-  const handleCommandSelect = useCallback((command: Command) => {
-    // TODO: Navigate to command detail screen with execution form
-    console.log('Selected command:', command.id);
+  const executeCommand = useCallback(async (command: Command) => {
+    setIsLoading(true);
+    try {
+      const webhookUrl = await SecureStore.getItemAsync('discord_webhook');
+      if (!webhookUrl) {
+        Alert.alert('Missing Settings', 'Configure Discord Webhook URL in Settings first.');
+        return;
+      }
+
+      const startedAt = Date.now();
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `/${command.id}`,
+          username: 'MaxBot Controller Mobile',
+        }),
+      });
+
+      const success = response.ok;
+      await appendHistory({
+        id: `${command.id}-${startedAt}`,
+        commandId: command.id,
+        commandName: command.name,
+        status: success ? STATUS.SUCCESS : STATUS.ERROR,
+        output: success ? 'Sent to Discord webhook' : undefined,
+        error: success ? undefined : `HTTP ${response.status}`,
+        startTime: startedAt,
+        endTime: Date.now(),
+        duration: Date.now() - startedAt,
+        timestamp: startedAt,
+      });
+
+      Alert.alert(
+        success ? 'Command Sent' : 'Command Failed',
+        success ? `${command.name} queued via Discord.` : `Failed with HTTP ${response.status}`
+      );
+    } catch (error) {
+      const startedAt = Date.now();
+      await appendHistory({
+        id: `${command.id}-${startedAt}`,
+        commandId: command.id,
+        commandName: command.name,
+        status: STATUS.ERROR,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        startTime: startedAt,
+        endTime: Date.now(),
+        duration: 0,
+        timestamp: startedAt,
+      });
+      Alert.alert('Command Failed', error instanceof Error ? error.message : 'Unknown error');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  const handleCommandSelect = useCallback(
+    (command: Command) => {
+      if (command.dangerous || command.requiresConfirmation) {
+        Alert.alert(
+          'Confirm Command',
+          `Run "${command.name}" now?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Run', style: 'destructive', onPress: () => void executeCommand(command) },
+          ]
+        );
+        return;
+      }
+      void executeCommand(command);
+    },
+    [executeCommand]
+  );
 
   return (
     <View style={styles.container}>
@@ -117,7 +190,7 @@ export default function CommandsScreen() {
       <ScrollView style={styles.list} scrollEventThrottle={16}>
         {filteredCommands.length === 0 ? (
           <Text style={styles.emptyText}>
-            {searchQuery ? 'No commands found' : 'Loading commands...'}
+          {searchQuery ? 'No commands found' : 'Loading commands...'}
           </Text>
         ) : (
           filteredCommands.map((cmd) => (

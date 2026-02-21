@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 
 export default function App() {
   useEffect(() => {
-    SplashScreen.hideAsync();
+    void SplashScreen.hideAsync();
   }, []);
 
   return (

@@ -47,7 +47,7 @@ Changes:
   ✓ Removed Octokit dependency
   ✓ Changed function signature from (token, username) to (username)
   ✓ Now uses process.env.GITHUB_PAT for authorization
-  ✓ API endpoint: GET /repos/duper508/maxbot-controller/collaborators/{username}
+  ✓ API endpoint: GET /repos/duper508/Maxbot-controller-v2/collaborators/{username}
   ✓ Authorization header uses server-side PAT only
 Verification:
   ✓ grep "process.env.GITHUB_PAT" = 2 matches in auth file
@@ -66,7 +66,7 @@ async function checkUserCollaborator(accessToken: string, username: string): Pro
 // AFTER (SECURE):
 async function checkUserCollaborator(username: string): Promise<boolean> {
   const response = await fetch(
-    `https://api.github.com/repos/duper508/maxbot-controller/collaborators/${username}`,
+    `https://api.github.com/repos/duper508/Maxbot-controller-v2/collaborators/${username}`,
     {
       headers: {
         'Authorization': `token ${process.env.GITHUB_PAT}` // Server-side PAT only

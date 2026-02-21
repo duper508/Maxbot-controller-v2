@@ -40,7 +40,7 @@ All critical and high-priority security vulnerabilities and functionality issues
   ```typescript
   // ✅ Uses dedicated PAT, not user's token
   const response = await fetch(
-    `https://api.github.com/repos/duper508/maxbot-controller/collaborators/${username}`,
+    `https://api.github.com/repos/duper508/Maxbot-controller-v2/collaborators/${username}`,
     { headers: { 'Authorization': `token ${process.env.GITHUB_PAT}` } }
   );
   ```

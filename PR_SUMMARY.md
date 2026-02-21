@@ -24,7 +24,7 @@ This PR addresses critical security vulnerabilities, high-priority functionality
   - Removed Octokit dependency
   - Changed function signature: `checkUserCollaborator(username)` 
   - Uses `process.env.GITHUB_PAT` for authorization
-  - API call: `GET /repos/duper508/maxbot-controller/collaborators/{username}`
+  - API call: `GET /repos/duper508/Maxbot-controller-v2/collaborators/{username}`
   - Returns 204 if collaborator, 404 if not
 - **Environment Variables Added**: `GITHUB_PAT` (required)
 - **Impact**: Prevents token leakage and unauthorized access

@@ -173,7 +173,7 @@ export default function UnauthorizedPage() {
             >
               <p style={{ margin: 0, marginBottom: '8px', color: '#FF0000' }}>
                 ✗ You must be a collaborator on:{' '}
-                <code style={{ color: '#FF0000' }}>duper508/maxbot-controller</code>
+                <code style={{ color: '#FF0000' }}>duper508/Maxbot-controller-v2</code>
               </p>
               <p style={{ margin: 0, color: THEME.MUTED_TEXT }}>
                 Please contact a repository administrator to request access.

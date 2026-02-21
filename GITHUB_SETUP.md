@@ -25,7 +25,7 @@ cd /home/duper/clawd/maxbot-controller
 git init
 
 # Add remote
-git remote add origin https://github.com/duper508/maxbot-controller.git
+git remote add origin https://github.com/duper508/Maxbot-controller-v2.git
 
 # Create main branch
 git branch -M main
@@ -203,15 +203,15 @@ Common causes:
 
 ## Useful GitHub URLs
 
-For your repository `duper508/maxbot-controller`:
+For your repository `duper508/Maxbot-controller-v2`:
 
-- **Main Page**: https://github.com/duper508/maxbot-controller
-- **Settings**: https://github.com/duper508/maxbot-controller/settings
-- **Actions**: https://github.com/duper508/maxbot-controller/actions
-- **Secrets**: https://github.com/duper508/maxbot-controller/settings/secrets/actions
-- **Branches**: https://github.com/duper508/maxbot-controller/settings/branches
-- **Issues**: https://github.com/duper508/maxbot-controller/issues
-- **Releases**: https://github.com/duper508/maxbot-controller/releases
+- **Main Page**: https://github.com/duper508/Maxbot-controller-v2
+- **Settings**: https://github.com/duper508/Maxbot-controller-v2/settings
+- **Actions**: https://github.com/duper508/Maxbot-controller-v2/actions
+- **Secrets**: https://github.com/duper508/Maxbot-controller-v2/settings/secrets/actions
+- **Branches**: https://github.com/duper508/Maxbot-controller-v2/settings/branches
+- **Issues**: https://github.com/duper508/Maxbot-controller-v2/issues
+- **Releases**: https://github.com/duper508/Maxbot-controller-v2/releases
 
 ---
 

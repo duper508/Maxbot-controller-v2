@@ -64,7 +64,7 @@ openssl rand -base64 32
 
 ### 3. Verify Collaborator Access
 
-The system automatically checks if the user is a collaborator on `duper508/maxbot-controller` during login:
+The system automatically checks if the user is a collaborator on `duper508/Maxbot-controller-v2` during login:
 
 - ✅ User authenticates with GitHub
 - ✅ System verifies collaborator status

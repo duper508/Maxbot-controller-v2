@@ -25,7 +25,7 @@ Successfully implemented a complete GitHub OAuth authentication system with secu
 
 **Implemented**:
 - GitHub OAuth 2.0 authentication via NextAuth.js
-- Automatic collaborator verification on `duper508/maxbot-controller`
+- Automatic collaborator verification on `duper508/Maxbot-controller-v2`
 - JWT-based session management
 - Automatic session expiration (30 days)
 - Session refresh every 24 hours
@@ -266,7 +266,7 @@ Verified by code review:
 
 ### ✅ Collaborator Verification
 
-- Login checks `duper508/maxbot-controller` collaborators
+- Login checks `duper508/Maxbot-controller-v2` collaborators
 - Non-collaborators redirected to `/unauthorized`
 - Verified via Octokit GitHub API
 

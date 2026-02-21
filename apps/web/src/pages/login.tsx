@@ -163,7 +163,7 @@ export default function LoginPage() {
               }}
             >
               You must be a collaborator on the{' '}
-              <code style={{ color: THEME.ACCENT_GREEN }}>duper508/maxbot-controller</code>{' '}
+              <code style={{ color: THEME.ACCENT_GREEN }}>duper508/Maxbot-controller-v2</code>{' '}
               repository to access this application.
             </p>
 

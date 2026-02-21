@@ -355,8 +355,8 @@ Quarterly:
 
 ## Key Links
 
-- **GitHub**: https://github.com/duper508/maxbot-controller
-- **Vercel**: https://vercel.com/duper508/maxbot-controller
+- **GitHub**: https://github.com/duper508/Maxbot-controller-v2
+- **Vercel**: https://vercel.com/duper508/Maxbot-controller-v2
 - **Expo**: https://expo.dev/@duper/maxbot-controller
 - **Discord Developer Portal**: https://discord.com/developers/applications
 

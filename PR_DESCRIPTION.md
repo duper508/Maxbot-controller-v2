@@ -26,7 +26,7 @@ This PR addresses critical security vulnerabilities and functionality issues ide
   // Before: Used user's access_token
   // After: Uses dedicated GitHub PAT
   const response = await fetch(
-    `https://api.github.com/repos/duper508/maxbot-controller/collaborators/${username}`,
+    `https://api.github.com/repos/duper508/Maxbot-controller-v2/collaborators/${username}`,
     {
       headers: { 'Authorization': `token ${process.env.GITHUB_PAT}` }
     }

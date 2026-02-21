@@ -155,7 +155,7 @@ NEXT_PUBLIC_API_BASE → https://your-domain.vercel.app/api
 
 **Fix**:
 1. Add user as collaborator:
-   - Go to `duper508/maxbot-controller` on GitHub
+   - Go to `duper508/Maxbot-controller-v2` on GitHub
    - Settings > Collaborators > Add collaborators
 2. User needs to accept invitation
 3. Try login again
@@ -379,7 +379,7 @@ If something breaks:
 - **Vercel**: https://vercel.com/support
 - **NextAuth**: https://next-auth.js.org/
 - **Discord API**: https://discord.com/developers/docs
-- **GitHub**: https://github.com/duper508/maxbot-controller/issues
+- **GitHub**: https://github.com/duper508/Maxbot-controller-v2/issues
 
 ---
 

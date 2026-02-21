@@ -6,6 +6,6 @@
     "jsx": "react-native",
     "moduleResolution": "node"
   },
-  "include": ["src/**/*.{ts,tsx}"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }

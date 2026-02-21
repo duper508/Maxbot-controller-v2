@@ -24,7 +24,7 @@
   - Removed Octokit import
   - Changed `checkUserCollaborator(accessToken, username)` to `checkUserCollaborator(username)`
   - Uses `process.env.GITHUB_PAT` instead of user's token
-  - API call: `GET /repos/duper508/maxbot-controller/collaborators/{username}`
+  - API call: `GET /repos/duper508/Maxbot-controller-v2/collaborators/{username}`
   - Auth header: `Authorization: token ${process.env.GITHUB_PAT}`
   - Validates: `process.env.GITHUB_PAT` required at startup
 - **Verification**:
