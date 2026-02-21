@@ -90,6 +90,24 @@ interface SelectedCommand {
   parameters: Record<string, string | number | boolean>;
 }
 
+type ExecutionStage =
+  | 'sending'
+  | 'sent'
+  | 'waiting'
+  | 'completed'
+  | 'error'
+  | 'timeout';
+
+interface ExecutionProgress {
+  commandName: string;
+  stage: ExecutionStage;
+  message: string;
+  percent: number;
+  requestId?: string;
+  attempt?: number;
+  maxAttempts?: number;
+}
+
 export default function Home({ discordChannelId }: { discordChannelId: string }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -104,6 +122,7 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
     'commands'
   );
   const [storageManager, setStorageManager] = useState<StorageManager | null>(null);
+  const [executionProgress, setExecutionProgress] = useState<ExecutionProgress | null>(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -147,12 +166,24 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
       parameters: Record<string, string | number | boolean>
     ) => {
       setIsLoading(true);
+      setExecutionProgress({
+        commandName: command.name,
+        stage: 'sending',
+        message: 'Sending webhook request...',
+        percent: 15,
+      });
       setOutput(`> EXECUTING: ${command.name}\n> SENDING TO DISCORD...`);
 
       try {
         // Validate parameters
         const validation = commandManager.validateParameters(command, parameters);
         if (!validation.valid) {
+          setExecutionProgress({
+            commandName: command.name,
+            stage: 'error',
+            message: 'Parameter validation failed',
+            percent: 100,
+          });
           setOutput(`ERROR: ${validation.errors.join('\n')}`);
           setIsLoading(false);
           return;
@@ -162,12 +193,25 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
         const result = await executeCommand(command.id, parameters);
 
         if (!result.success) {
+          setExecutionProgress({
+            commandName: command.name,
+            stage: 'error',
+            message: `Webhook failed: ${result.error || 'Unknown error'}`,
+            percent: 100,
+          });
           setOutput(`ERROR: ${result.error || 'Failed to execute'}`);
           setIsLoading(false);
           return;
         }
 
         const requestId = (result.data as any)?.requestId;
+        setExecutionProgress({
+          commandName: command.name,
+          stage: 'sent',
+          message: 'Webhook sent successfully',
+          percent: 45,
+          requestId,
+        });
         setOutput(
           `> REQUEST SENT (ID: ${requestId})\n> AWAITING RESPONSE FROM DISCORD...`
         );
@@ -175,11 +219,29 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
         // Poll for real responses from Discord API
         let attempts = 0;
         const maxAttempts = 30; // 60 seconds with 2s intervals
+        setExecutionProgress({
+          commandName: command.name,
+          stage: 'waiting',
+          message: 'Waiting for bot to receive command...',
+          percent: 55,
+          requestId,
+          attempt: 0,
+          maxAttempts,
+        });
         const pollInterval = setInterval(async () => {
           attempts++;
           
           if (attempts > maxAttempts) {
             clearInterval(pollInterval);
+            setExecutionProgress({
+              commandName: command.name,
+              stage: 'timeout',
+              message: 'Timed out waiting for bot response',
+              percent: 100,
+              requestId,
+              attempt: maxAttempts,
+              maxAttempts,
+            });
             setOutput(`> TIMEOUT: No response received after ${maxAttempts * 2} seconds`);
             setIsLoading(false);
             return;
@@ -195,6 +257,15 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
 
             if (pollResult.success && pollResult.data?.messages && pollResult.data.messages.length > 0) {
               clearInterval(pollInterval);
+              setExecutionProgress({
+                commandName: command.name,
+                stage: 'completed',
+                message: 'Bot response received',
+                percent: 100,
+                requestId,
+                attempt: attempts,
+                maxAttempts,
+              });
               
               // Display real bot response(s)
               const messages = pollResult.data.messages;
@@ -215,11 +286,30 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
           }
 
           // Continue polling
+          const pollPercent = Math.min(
+            95,
+            55 + Math.round((attempts / maxAttempts) * 40)
+          );
+          setExecutionProgress({
+            commandName: command.name,
+            stage: 'waiting',
+            message: 'Waiting for bot to receive command...',
+            percent: pollPercent,
+            requestId,
+            attempt: attempts,
+            maxAttempts,
+          });
           setOutput(
             `> POLLING... (attempt ${attempts}/${maxAttempts})`
           );
         }, 2000);
       } catch (error) {
+        setExecutionProgress({
+          commandName: command.name,
+          stage: 'error',
+          message: error instanceof Error ? error.message : 'Unknown error',
+          percent: 100,
+        });
         setOutput(
           `ERROR: ${error instanceof Error ? error.message : 'Unknown error'}`
         );
@@ -772,6 +862,79 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
             )}
 
             {/* Output */}
+            {executionProgress && (
+              <div
+                style={{
+                  border: `2px solid ${THEME.BORDER_COLOR}`,
+                  borderRadius: '4px',
+                  padding: '14px 16px',
+                  backgroundColor: `${THEME.DARK_BG}dd`,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '8px',
+                    gap: '12px',
+                  }}
+                >
+                  <strong style={{ fontSize: '13px' }}>
+                    EXECUTION STATUS: {executionProgress.commandName.toUpperCase()}
+                  </strong>
+                  <span style={{ fontSize: '11px', color: THEME.MUTED_TEXT }}>
+                    {executionProgress.percent}%
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    height: '10px',
+                    border: `1px solid ${THEME.BORDER_COLOR}`,
+                    backgroundColor: `${THEME.DARK_BG}aa`,
+                    borderRadius: '2px',
+                    overflow: 'hidden',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${executionProgress.percent}%`,
+                      height: '100%',
+                      backgroundColor:
+                        executionProgress.stage === 'error' || executionProgress.stage === 'timeout'
+                          ? '#FF4D4D'
+                          : THEME.PRIMARY_GREEN,
+                      boxShadow: `0 0 12px ${
+                        executionProgress.stage === 'error' || executionProgress.stage === 'timeout'
+                          ? 'rgba(255, 77, 77, 0.4)'
+                          : 'rgba(0, 255, 65, 0.4)'
+                      }`,
+                      transition: 'width 250ms ease',
+                    }}
+                  />
+                </div>
+
+                <p style={{ margin: 0, fontSize: '12px' }}>
+                  {executionProgress.message}
+                </p>
+                {executionProgress.requestId && (
+                  <p
+                    style={{
+                      margin: '6px 0 0 0',
+                      fontSize: '11px',
+                      color: THEME.MUTED_TEXT,
+                    }}
+                  >
+                    Request: {executionProgress.requestId}
+                    {executionProgress.attempt !== undefined &&
+                      executionProgress.maxAttempts !== undefined &&
+                      ` | Poll ${executionProgress.attempt}/${executionProgress.maxAttempts}`}
+                  </p>
+                )}
+              </div>
+            )}
             <TerminalDisplay content={output} isLoading={isLoading} />
           </div>
         </div>
