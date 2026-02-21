@@ -43,9 +43,16 @@ function generateRequestId(): string {
 function formatCommandEmbed(
   commandName: string,
   commandId: string,
+  requestId: string,
   parameters: Record<string, unknown>
 ): any {
-  const botMention = process.env.DISCORD_COMMAND_MENTION || '@Max-bot#1237';
+  const botUserId = process.env.DISCORD_BOT_USER_ID;
+  const explicitMention = process.env.DISCORD_COMMAND_MENTION;
+  const botMention = botUserId
+    ? `<@${botUserId}>`
+    : explicitMention || '';
+
+  const commandText = `/${commandId}`;
   const paramFields = Object.entries(parameters)
     .filter(([, value]) => value !== undefined && value !== null)
     .map(([key, value]) => ({
@@ -55,11 +62,16 @@ function formatCommandEmbed(
     }));
 
   return {
-    content: `${botMention} command request: ${commandName} (${commandId})`,
+    content: `${botMention ? `${botMention} ` : ''}${commandText}`.trim(),
+    allowed_mentions: botUserId
+      ? {
+          users: [botUserId],
+        }
+      : undefined,
     embeds: [
       {
         title: `🎮 Command Executed: ${commandName}`,
-        description: `Request ID: \`${commandId}\``,
+        description: `Request ID: \`${requestId}\`\nCommand: \`${commandText}\``,
         color: 0x00ff41, // Pip-Boy green
         fields: paramFields.length > 0 ? paramFields : undefined,
         footer: {
@@ -118,7 +130,12 @@ async function handler(
     const requestId = generateRequestId();
 
     // Format embed
-    const payload = formatCommandEmbed(command.name, requestId, parameters || {});
+    const payload = formatCommandEmbed(
+      command.name,
+      command.id,
+      requestId,
+      parameters || {}
+    );
 
     // Send to Discord
     const result = await sendCommandToDiscord(payload);
