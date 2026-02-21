@@ -141,17 +141,117 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
     loadHistory();
   }, [status]);
 
-  const handleCommandSelect = useCallback((command: Command) => {
-    const params: Record<string, string | number | boolean> = {};
-    command.parameters.forEach((param) => {
-      if (param.default !== undefined) {
-        params[param.id] = param.default;
-      } else {
-        params[param.id] = '';
+  const executeSelectedCommand = useCallback(
+    async (
+      command: Command,
+      parameters: Record<string, string | number | boolean>
+    ) => {
+      setIsLoading(true);
+      setOutput(`> EXECUTING: ${command.name}\n> SENDING TO DISCORD...`);
+
+      try {
+        // Validate parameters
+        const validation = commandManager.validateParameters(command, parameters);
+        if (!validation.valid) {
+          setOutput(`ERROR: ${validation.errors.join('\n')}`);
+          setIsLoading(false);
+          return;
+        }
+
+        // Execute command via secure API
+        const result = await executeCommand(command.id, parameters);
+
+        if (!result.success) {
+          setOutput(`ERROR: ${result.error || 'Failed to execute'}`);
+          setIsLoading(false);
+          return;
+        }
+
+        const requestId = (result.data as any)?.requestId;
+        setOutput(
+          `> REQUEST SENT (ID: ${requestId})\n> AWAITING RESPONSE FROM DISCORD...`
+        );
+
+        // Poll for real responses from Discord API
+        let attempts = 0;
+        const maxAttempts = 30; // 60 seconds with 2s intervals
+        const pollInterval = setInterval(async () => {
+          attempts++;
+          
+          if (attempts > maxAttempts) {
+            clearInterval(pollInterval);
+            setOutput(`> TIMEOUT: No response received after ${maxAttempts * 2} seconds`);
+            setIsLoading(false);
+            return;
+          }
+
+          try {
+            // Call real poll-response API to get bot messages
+            const pollResult = await pollResponses(
+              discordChannelId,
+              5,
+              requestId
+            );
+
+            if (pollResult.success && pollResult.data?.messages && pollResult.data.messages.length > 0) {
+              clearInterval(pollInterval);
+              
+              // Display real bot response(s)
+              const messages = pollResult.data.messages;
+              let outputText = `> RESPONSE RECEIVED (${messages.length} message${messages.length > 1 ? 's' : ''}):\n`;
+              
+              messages.forEach((msg: any, idx: number) => {
+                const author = msg.author?.username || 'Unknown';
+                const content = msg.content || '(empty)';
+                outputText += `\n[${idx + 1}] ${author}:\n${content}`;
+              });
+              
+              setOutput(outputText + '\n> STATUS: COMPLETED');
+              setIsLoading(false);
+              return;
+            }
+          } catch (error) {
+            console.error('Poll error:', error);
+          }
+
+          // Continue polling
+          setOutput(
+            `> POLLING... (attempt ${attempts}/${maxAttempts})`
+          );
+        }, 2000);
+      } catch (error) {
+        setOutput(
+          `ERROR: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
+        setIsLoading(false);
       }
-    });
-    setSelectedCmd({ command, parameters: params });
-  }, []);
+    },
+    [discordChannelId]
+  );
+
+  const handleCommandSelect = useCallback(
+    (command: Command) => {
+      const params: Record<string, string | number | boolean> = {};
+      command.parameters.forEach((param) => {
+        if (param.default !== undefined) {
+          params[param.id] = param.default;
+        } else {
+          params[param.id] = '';
+        }
+      });
+      setSelectedCmd({ command, parameters: params });
+
+      // UX: single-click executes simple/safe commands (e.g., System Status).
+      if (
+        command.parameters.length === 0 &&
+        !command.dangerous &&
+        !command.requiresConfirmation
+      ) {
+        void executeSelectedCommand(command, params);
+      }
+    },
+    [executeSelectedCommand]
+  );
 
   const handleParameterChange = (paramId: string, value: unknown) => {
     if (!selectedCmd) return;
@@ -170,91 +270,7 @@ export default function Home({ discordChannelId }: { discordChannelId: string })
       return;
     }
 
-    setIsLoading(true);
-    setOutput(`> EXECUTING: ${selectedCmd.command.name}\n> SENDING TO DISCORD...`);
-
-    try {
-      // Validate parameters
-      const validation = commandManager.validateParameters(
-        selectedCmd.command,
-        selectedCmd.parameters
-      );
-      if (!validation.valid) {
-        setOutput(`ERROR: ${validation.errors.join('\n')}`);
-        setIsLoading(false);
-        return;
-      }
-
-      // Execute command via secure API
-      const result = await executeCommand(
-        selectedCmd.command.id,
-        selectedCmd.parameters
-      );
-
-      if (!result.success) {
-        setOutput(`ERROR: ${result.error || 'Failed to execute'}`);
-        setIsLoading(false);
-        return;
-      }
-
-      const requestId = (result.data as any)?.requestId;
-      setOutput(
-        `> REQUEST SENT (ID: ${requestId})\n> AWAITING RESPONSE FROM DISCORD...`
-      );
-
-      // Poll for real responses from Discord API
-      let attempts = 0;
-      const maxAttempts = 30; // 60 seconds with 2s intervals
-      const pollInterval = setInterval(async () => {
-        attempts++;
-        
-        if (attempts > maxAttempts) {
-          clearInterval(pollInterval);
-          setOutput(`> TIMEOUT: No response received after ${maxAttempts * 2} seconds`);
-          setIsLoading(false);
-          return;
-        }
-
-        try {
-          // Call real poll-response API to get bot messages
-          const pollResult = await pollResponses(
-            discordChannelId,
-            5,
-            requestId
-          );
-
-          if (pollResult.success && pollResult.data?.messages && pollResult.data.messages.length > 0) {
-            clearInterval(pollInterval);
-            
-            // Display real bot response(s)
-            const messages = pollResult.data.messages;
-            let outputText = `> RESPONSE RECEIVED (${messages.length} message${messages.length > 1 ? 's' : ''}):\n`;
-            
-            messages.forEach((msg: any, idx: number) => {
-              const author = msg.author?.username || 'Unknown';
-              const content = msg.content || '(empty)';
-              outputText += `\n[${idx + 1}] ${author}:\n${content}`;
-            });
-            
-            setOutput(outputText + '\n> STATUS: COMPLETED');
-            setIsLoading(false);
-            return;
-          }
-        } catch (error) {
-          console.error('Poll error:', error);
-        }
-
-        // Continue polling
-        setOutput(
-          `> POLLING... (attempt ${attempts}/${maxAttempts})`
-        );
-      }, 2000);
-    } catch (error) {
-      setOutput(
-        `ERROR: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
-      setIsLoading(false);
-    }
+    await executeSelectedCommand(selectedCmd.command, selectedCmd.parameters);
   };
 
   const handleFavoriteToggle = (commandId: string) => {
