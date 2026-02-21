@@ -16,7 +16,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { commandManager } from '@repo/commands';
 import { withAuth, withAuthAndCsrf } from '@/lib/auth-middleware';
 import { withRateLimit, EXECUTE_LIMIT } from '@/lib/rate-limit';
-import { sendCommandToDiscord } from '@/lib/discord-server';
+import { getDiscordBotUserId, sendCommandToDiscord } from '@/lib/discord-server';
 
 interface ExecuteCommandRequest {
   commandId: string;
@@ -40,17 +40,15 @@ function generateRequestId(): string {
 /**
  * Format command embed for Discord
  */
-function formatCommandEmbed(
+async function formatCommandEmbed(
   commandName: string,
   commandId: string,
   requestId: string,
   parameters: Record<string, unknown>
-): any {
-  const botUserId = process.env.DISCORD_BOT_USER_ID;
-  const explicitMention = process.env.DISCORD_COMMAND_MENTION;
-  const botMention = botUserId
-    ? `<@${botUserId}>`
-    : explicitMention || '';
+): Promise<any> {
+  const explicitMention = process.env.DISCORD_COMMAND_MENTION?.trim();
+  const botUserId = explicitMention ? undefined : await getDiscordBotUserId();
+  const botMention = explicitMention || (botUserId ? `<@${botUserId}>` : '');
 
   const commandText = `/${commandId}`;
   const paramFields = Object.entries(parameters)
@@ -130,7 +128,7 @@ async function handler(
     const requestId = generateRequestId();
 
     // Format embed
-    const payload = formatCommandEmbed(
+    const payload = await formatCommandEmbed(
       command.name,
       command.id,
       requestId,

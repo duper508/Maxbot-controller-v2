@@ -41,6 +41,9 @@ if (typeof window === 'undefined') {
 
 interface DiscordWebhookPayload {
   content?: string;
+  allowed_mentions?: {
+    users?: string[];
+  };
   embeds?: Array<{
     title?: string;
     description?: string;
@@ -55,6 +58,9 @@ interface DiscordWebhookPayload {
     };
   }>;
 }
+
+let cachedBotUserId: string | null = null;
+let botUserIdLookupAttempted = false;
 
 /**
  * Send command to Discord webhook (server-side only)
@@ -97,6 +103,57 @@ export async function sendCommandToDiscord(
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
+  }
+}
+
+/**
+ * Resolve bot user ID from configured env or bot token.
+ * Cached after first successful lookup.
+ */
+export async function getDiscordBotUserId(): Promise<string | undefined> {
+  const configuredBotUserId = process.env.DISCORD_BOT_USER_ID?.trim();
+  if (configuredBotUserId) {
+    return configuredBotUserId;
+  }
+
+  if (cachedBotUserId) {
+    return cachedBotUserId;
+  }
+
+  // Avoid hammering Discord API on repeated failures.
+  if (botUserIdLookupAttempted) {
+    return undefined;
+  }
+  botUserIdLookupAttempted = true;
+
+  const botToken = process.env.DISCORD_BOT_TOKEN;
+  if (!botToken) {
+    return undefined;
+  }
+
+  try {
+    const response = await fetch('https://discord.com/api/v10/users/@me', {
+      headers: {
+        Authorization: `Bot ${botToken}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to resolve bot user ID:', response.status);
+      return undefined;
+    }
+
+    const data = (await response.json()) as { id?: string };
+    if (data.id) {
+      cachedBotUserId = data.id;
+      return data.id;
+    }
+
+    return undefined;
+  } catch (error) {
+    console.error('Failed to resolve bot user ID:', error);
+    return undefined;
   }
 }
 
