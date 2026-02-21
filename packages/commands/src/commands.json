@@ -50,7 +50,12 @@
           "type": "select",
           "description": "Filter by log level",
           "required": false,
-          "options": ["ALL", "INFO", "WARN", "ERROR"]
+          "options": [
+            "ALL",
+            "INFO",
+            "WARN",
+            "ERROR"
+          ]
         }
       ],
       "timeout": 5000
@@ -82,78 +87,44 @@
       "timeout": 15000
     },
     {
-      "id": "net_trace",
-      "name": "Trace Route",
-      "description": "Trace network route to a host",
-      "category": "network",
-      "icon": "🗺️",
-      "parameters": [
-        {
-          "id": "host",
-          "name": "Target Host",
-          "type": "string",
-          "description": "Hostname or IP address",
-          "required": true,
-          "placeholder": "example.com"
-        }
-      ],
-      "timeout": 30000
-    },
-    {
-      "id": "net_dns",
-      "name": "DNS Lookup",
-      "description": "Perform DNS lookup for a domain",
-      "category": "network",
-      "icon": "🔍",
-      "parameters": [
-        {
-          "id": "domain",
-          "name": "Domain",
-          "type": "string",
-          "description": "Domain name to lookup",
-          "required": true,
-          "placeholder": "example.com"
-        }
-      ],
-      "timeout": 5000
-    },
-    {
       "id": "proc_list",
-      "name": "List Processes",
-      "description": "List running processes",
+      "name": "Process Manager",
+      "description": "List processes or submit a kill request for a specific PID",
       "category": "processes",
       "icon": "⚡",
       "parameters": [
         {
+          "id": "action",
+          "name": "Action",
+          "type": "select",
+          "description": "Choose process operation",
+          "required": true,
+          "options": [
+            "list",
+            "kill"
+          ],
+          "default": "list"
+        },
+        {
           "id": "filter",
           "name": "Process filter",
           "type": "string",
-          "description": "Filter processes by name",
+          "description": "Filter processes by name (for list action)",
           "required": false,
           "placeholder": "node"
-        }
-      ],
-      "timeout": 5000
-    },
-    {
-      "id": "proc_kill",
-      "name": "Kill Process",
-      "description": "Terminate a running process",
-      "category": "processes",
-      "icon": "🛑",
-      "parameters": [
+        },
         {
           "id": "pid",
           "name": "Process ID",
           "type": "number",
-          "description": "PID of the process to kill",
-          "required": true
+          "description": "PID to terminate (for kill action)",
+          "required": false
         },
         {
           "id": "force",
           "name": "Force kill",
           "type": "boolean",
-          "description": "Use SIGKILL instead of SIGTERM",
+          "description": "Use SIGKILL instead of SIGTERM (for kill action)",
           "required": false,
           "default": false
         }
@@ -243,61 +214,6 @@
       "timeout": 5000
     },
     {
-      "id": "git_pull",
-      "name": "Git Pull",
-      "description": "Pull latest changes from remote",
-      "category": "development",
-      "icon": "⬇️",
-      "parameters": [
-        {
-          "id": "repo_path",
-          "name": "Repository path",
-          "type": "string",
-          "description": "Path to git repository",
-          "required": false,
-          "placeholder": "/path/to/repo"
-        }
-      ],
-      "timeout": 30000
-    },
-    {
-      "id": "docker_ps",
-      "name": "Docker Containers",
-      "description": "List running Docker containers",
-      "category": "containers",
-      "icon": "🐳",
-      "parameters": [
-        {
-          "id": "all",
-          "name": "Show all containers",
-          "type": "boolean",
-          "description": "Include stopped containers",
-          "required": false,
-          "default": false
-        }
-      ],
-      "timeout": 5000
-    },
-    {
-      "id": "docker_restart",
-      "name": "Restart Container",
-      "description": "Restart a Docker container",
-      "category": "containers",
-      "icon": "🔄",
-      "parameters": [
-        {
-          "id": "container",
-          "name": "Container ID/Name",
-          "type": "string",
-          "description": "Container identifier",
-          "required": true,
-          "placeholder": "my-container"
-        }
-      ],
-      "timeout": 10000,
-      "requiresConfirmation": true
-    },
-    {
       "id": "env_show",
       "name": "Show Environment",
       "description": "Display environment variables",
@@ -316,22 +232,54 @@
       "timeout": 5000
     },
     {
-      "id": "perf_benchmark",
-      "name": "Run Benchmark",
-      "description": "Run system performance benchmark",
-      "category": "performance",
-      "icon": "⚡",
+      "id": "approval_queue",
+      "name": "Approval Queue",
+      "description": "Show pending approval requests and their status",
+      "category": "system",
+      "icon": "✅",
       "parameters": [
         {
-          "id": "test",
-          "name": "Benchmark test",
+          "id": "status",
+          "name": "Status filter",
           "type": "select",
-          "description": "Type of benchmark",
+          "description": "Filter queue entries by status",
           "required": false,
-          "options": ["cpu", "memory", "disk", "network", "all"]
+          "options": [
+            "pending",
+            "approved",
+            "rejected",
+            "all"
+          ],
+          "default": "pending"
+        },
+        {
+          "id": "limit",
+          "name": "Max items",
+          "type": "number",
+          "description": "Maximum number of queue entries to return",
+          "required": false,
+          "default": 25
         }
       ],
-      "timeout": 60000
+      "timeout": 10000
+    },
+    {
+      "id": "model_select",
+      "name": "Select Model",
+      "description": "Set or view the active model for command execution",
+      "category": "environment",
+      "icon": "🧠",
+      "parameters": [
+        {
+          "id": "model",
+          "name": "Model ID",
+          "type": "string",
+          "description": "Model to activate (leave blank to view current)",
+          "required": false,
+          "placeholder": "openai/gpt-4.1-mini"
+        }
+      ],
+      "timeout": 5000
     }
   ]
 }
