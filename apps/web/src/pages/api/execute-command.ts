@@ -45,6 +45,7 @@ function formatCommandEmbed(
   commandId: string,
   parameters: Record<string, unknown>
 ): any {
+  const botMention = process.env.DISCORD_COMMAND_MENTION || '@Max-bot#1237';
   const paramFields = Object.entries(parameters)
     .filter(([, value]) => value !== undefined && value !== null)
     .map(([key, value]) => ({
@@ -54,6 +55,7 @@ function formatCommandEmbed(
     }));
 
   return {
+    content: `${botMention} command request: ${commandName} (${commandId})`,
     embeds: [
       {
         title: `🎮 Command Executed: ${commandName}`,
